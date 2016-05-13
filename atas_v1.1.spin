@@ -37,11 +37,9 @@ PUB Start
   Init
   Send_Atas
   extractData
-  printArrays
+  printDatas
 
-
-
-PUB printArrays | i, strPrint[32]
+PUB printDatas | i, strPrint[32]
 
   pc.newline
   pc.newline
@@ -49,13 +47,14 @@ PUB printArrays | i, strPrint[32]
   ' print title line
   bytemove (@strPrint,string("SSID"),4)
   Str.pad(@strPrint,20,string(" "),STR#PAD_RIGHT)
-  Str.Concatenate(@strPrint,string("RSSI"))
+'  Str.Concatenate(@strPrint,string("RSSI"))
   pc.str(@strPrint)
+  pc.str(string("RSSI"))
   pc.newline
 
   bytefill(@strPrint,0,32)
   bytemove(@strPrint,string("-"),1)
-  str.StrRepeat(@strPrint,25)
+  str.StrRepeat(@strPrint,31)
   pc.str(@strPrint)
 
   ' print Data lines
