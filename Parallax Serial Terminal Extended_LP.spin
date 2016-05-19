@@ -23,7 +23,7 @@ USAGE:
   • At 80 MHz, this object properly receives/transmits at up to 250 Kbaud, or performs transmit-only at up to 1 Mbaud.
 
 Modification
-  [LP]  change rxcheck from pri to PUB
+  [LP]  change rxcheck from PRI to PUB
 }
   
 CON

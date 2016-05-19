@@ -1,13 +1,13 @@
 {{
 *****************************************
-* uLCD(SK)-32PTU display driver    v2.1 *
+* uLCD(SK)-32PTU display driver    v2.2 *
 * Author: Beau Schwabe                  *
 * Copyright (c) 2013 Parallax           *
 * See end of file for terms of use.     *
 *****************************************
 See end of file for terms of use:
 
-File: OLED-128-G2_v2.1.spin
+File: OLED-128-G2_v2.2.spin
 ---------------------------------------------------------------------------------------------------------------------------
 Revision History:  uOLED-128-G2
 
@@ -20,6 +20,9 @@ Revision History:  uOLED-128-G2
                                 - significant overall speed improvements through optimization
 ---------------------------------------------------------------------------------------------------------------------------
 11-08-2013      V2.1            - compatibility updates to command structure
+---------------------------------------------------------------------------------------------------------------------------
+
+11-08-2013      V2.2            - small bug on dec, binary and hex. exchange row and column to be consistent with placestring
 ---------------------------------------------------------------------------------------------------------------------------
 
 
@@ -1935,7 +1938,7 @@ pub NextAck                                                                     
     _Ack := ser.CharIn
     result := _Ack    
 
-pub dec(data, r, c)                                     
+pub dec(data, c, r)
 '-------------------------------------------------------------------------
 '--------------------------------┌─────┐----------------------------------
 '--------------------------------│ dec │----------------------------------
@@ -1945,9 +1948,9 @@ pub dec(data, r, c)
 ''Simply displays a byte, word or long as a series of ASCII characters representing their number in decimal "r" and "c"
 ''are the starting column and row                                                            
                                                         
-placestring(r, c, decstr(data), 0)
+placestring(c, r, decstr(data), 0)
 
-pub binary(data, digits, r,c)                           
+pub binary(data, digits, c,r)
 '-------------------------------------------------------------------------
 '--------------------------------┌────────┐-------------------------------
 '--------------------------------│ binary │-------------------------------
@@ -1957,9 +1960,9 @@ pub binary(data, digits, r,c)
 ''This is used to display binary data onto the screen. "Digits" is the number of digits in the sequence "r" and
 '' "c" are the starting column and row
                                                                                                              
-placestring(r, c, binstr(data, digits), 0)
+placestring(c, r, binstr(data, digits), 0)
 
-pub hex(data, digits,r,c)                               
+pub hex(data, digits,c,r)
 '-------------------------------------------------------------------------
 '--------------------------------┌─────┐----------------------------------
 '--------------------------------│ hex │----------------------------------
@@ -1969,7 +1972,7 @@ pub hex(data, digits,r,c)
 ''Simply displays a Hex number on to the screen, "Digits" is the number of digits in the sequence "r" and "c" are the
 ''starting column and row
                                               
-placestring(r, c, hexstr(data, digits), 0)
+placestring(c, r, hexstr(data, digits), 0)
                                                       
 pri Fxn(argCount,Command,ArgAddress)|index
 SendData(Command)
