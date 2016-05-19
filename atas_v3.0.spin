@@ -24,13 +24,15 @@ CON
 VAR
   long stack[10]                ' stack space for second cog
   byte strReturn[Length]
-  byte XBchar
   word ptrSSID[MaxSSID]
   word ptrRSSI[MaxSSID]       'ptr adress of RSSI in string strReturn
   byte RSSI[MaxSSID]          'ptr adress of RSSI in string strReturn
   byte NbSSIDDectected          ' count how many ssid are dectected
   byte CogIdent
   byte endOfXBData
+  byte OledrowMax
+  byte OledsizeMax
+
 
 OBJ
 
@@ -42,18 +44,24 @@ OBJ
 PUB Start
 
   Init
+
+
   GetXbeeData
- ' XB.Delay(1000)
   ParseString     'extract Data
-  printSSID
+    'printSSID
   OledDisplay
+  '  waitcnt(clkfreq * 10 + cnt) ' pause 5s
+
+
 
 PUB GetXbeeData
   endOfXBData:=0                            ' initialize the flag waiting for the end of XB data
  ' CogIdent:=cognew(XB_to_PC(@strReturn),@stack)       ' Start cog for XBee--> PC comms
   XB_to_PC(@strReturn)
 
-PUB OledDisplay | col, row, strOled[18]
+PUB OledDisplay | row, strOled[18]
+
+  OledrowMax := NbSSIDDectected <# 13                    ' no more than 13 rows available
   LED.ClearScreen                                         ''Clear the Display screen
   LED.TextBackgroundColor(LED.RGB(0,0,0))                 ''Make text background color BLACK
   LED.TextForegroundColor(LED.RGB(255,255,255))           ''Make text foreground color White
@@ -62,22 +70,20 @@ PUB OledDisplay | col, row, strOled[18]
   LED.MoveCursor(0,5)
   LED.PutString(LED.decstr(NbSSIDDectected),0)
 
- 'if (NbSSIDDectected < 10)
- '   LED.placestring(6,0,string(")       RSSI"),0)
- 'else
 
   LED.MoveCursor(0,7)
-  LED.PutString(string(")      (dB)"),0)
+  LED.PutString(string(")        dB"),0)
   LED.MoveCursor(1,0)
   LED.PutString(string("------------------"),0)
 
-  repeat row from 2 to (NbSSIDDectected<#14)
+  repeat row from 2 to OledrowMax
+    OledsizeMax := strsize(ptrSSID[row-2]) <# 14 ' truncate at 15th char
     LED.MoveCursor(row,0)
     bytefill(@strOled,0,18)
-    bytemove(@strOled,ptrSSID[row],strsize(ptrSSID[row])<#18)
+    bytemove(@strOled,ptrSSID[row-2],OledsizeMax)
     LED.PutString(@strOled,15)
     LED.MoveCursor(row,15)
-    LED.PutString(LED.decstr(~RSSI[row]),0)
+    LED.PutString(LED.decstr(~RSSI[row-2]),0)
 
 PUB printSSID | i, strPrint[32]
 
@@ -207,8 +213,7 @@ PUB Init
 
   XB.Start(XB_Rx, XB_Tx, 0, XB_Baud)          ' Start Xbee
 
-
-  PC.Start(PC_Baud)                           ' Start Parallax Serial Terminal
+ ' PC.Start(PC_Baud)                           ' Start Parallax Serial Terminal
 
 
   LED.start(OLEDrxpin, OLEDtxpin, OLEDreset, OLEDBaud)                ''Starts uOLED display
